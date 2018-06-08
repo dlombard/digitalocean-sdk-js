@@ -1,22 +1,33 @@
 {
-  "name": "node-digitalocean",
-  "repository": {
-    "type": "git",
-    "url": " git://github.com:dlombard/digitalocean-sdk-js.git"
+  "name": "digitalocean-sdk",
+  "version": "0.0.1",
+  "description": "Node.js wrapper for the API Version of DigitalOcean",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
   },
-  "author": "Davenson Lombard <lombard.davenson@gmail.com>",
-  "version": "0.01",
-  "engines": {
-    "node": ">=6"
-  },
-  "description": "Node.js wrapper for API version 2 of DigitalOcean",
-  "main": "./index.js",
   "dependencies": {
     "axios": "^0.18.0"
   },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dlombard/digitalocean-sdk-js.git"
+  },
   "keywords": [
     "digitalocean",
-    "v2",
-    "sdk"
-  ]
+    "wrapper",
+    "sdk",
+    "api",
+    "v2"
+  ],
+  "author": "Davenson Lombard <lombard.davenson@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dlombard/digitalocean-sdk-js/issues"
+  },
+  "homepage": "https://github.com/dlombard/digitalocean-sdk-js#readme"
 }
