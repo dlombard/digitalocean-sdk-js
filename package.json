@@ -2,7 +2,7 @@
   "name": "node-digitalocean",
   "repository": {
     "type": "git",
-    "url": " git@github.com:dlombard/digitalocean-sdk-js.git"
+    "url": " git://github.com:dlombard/digitalocean-sdk-js.git"
   },
   "author": "Davenson Lombard <lombard.davenson@gmail.com>",
   "version": "0.01",
