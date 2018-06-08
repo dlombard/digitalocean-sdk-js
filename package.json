@@ -1,0 +1,22 @@
+{
+  "name": "node-digitalocean",
+  "repository": {
+    "type": "git",
+    "url": " git@github.com:dlombard/digitalocean-sdk-js.git"
+  },
+  "author": "Davenson Lombard <lombard.davenson@gmail.com>",
+  "version": "0.01",
+  "engines": {
+    "node": ">=6"
+  },
+  "description": "Node.js wrapper for API version 2 of DigitalOcean",
+  "main": "./index.js",
+  "dependencies": {
+    "axios": "^0.18.0"
+  },
+  "keywords": [
+    "digitalocean",
+    "v2",
+    "sdk"
+  ]
+}
