@@ -3,6 +3,7 @@ import { AxiosInstance } from "axios";
 import { ISnapshot } from "./snapshots";
 import { ISize } from "./sizes";
 import { IRegion } from "./regions";
+import DOCursor from "./utils/DOCursor";
 
 export interface IDroplet {
   id: number,
@@ -77,13 +78,13 @@ export interface IBackup {
 interface IDropletsService {
   create: (request: IDropletRequest) => Promise<IDroplet>
   createMany: (request: IDropletsRequest) => Promise<IDroplet[]>
-  get: () => Promise<IDroplet[]>
+  get: () => DOCursor
   getById: (dropletId: string) => Promise<IDroplet>
-  getByTag: (tagName: string) => Promise<IDroplet[]>
-  kernels: (dropletId: string) => Promise<IKernel[]>
-  snapshots: (dropletId: string) => Promise<ISnapshot[]>
+  getByTag: (tagName: string) => DOCursor
+  kernels: (dropletId: string) => DOCursor
+  snapshots: (dropletId: string) => DOCursor
   backups: (dropletId: string) => Promise<IBackup[]>
-  actions: (dropletId: string) => Promise<IAction[]>
+  actions: (dropletId: string) => DOCursor
   delete: (dropletId: string) => Promise<number>
   deleteByTag: (tagName: string) => Promise<number>
   dropletNeighbors: (dropletId: string) => Promise<IDroplet[]>
@@ -108,10 +109,10 @@ export default class Droplets implements IDropletsService {
       return r.data.droplets
     })
   }
-  get(): Promise<IDroplet[]> {
-    return this.client.get(this.path).then((r) => {
-      return r.data.droplets
-    })
+  get(): DOCursor {
+    var cursor = new DOCursor(this.client, this.path, undefined, 40)
+
+    return cursor
   }
   getById(dropletId: string): Promise<IDroplet> {
     var uri = `${this.path}/${dropletId}`
@@ -119,22 +120,22 @@ export default class Droplets implements IDropletsService {
       return r.data.droplet
     })
   }
-  getByTag(tagName: string): Promise<IDroplet[]> {
-    return this.client.get(this.path, { params: { tag_name: tagName } }).then((r) => {
-      return r.data.droplets
-    })
+  getByTag(tagName: string): DOCursor {
+    var cursor = new DOCursor(this.client, this.path, { tag_name: tagName }, 40)
+
+    return cursor
   }
-  kernels(dropletId: string): Promise<IKernel[]> {
+  kernels(dropletId: string): DOCursor {
     var uri = `${this.path}/${dropletId}/kernels`
-    return this.client.get(uri).then((r) => {
-      return r.data.kernels
-    })
+    var cursor = new DOCursor(this.client, uri, undefined, 40)
+
+    return cursor
   }
-  snapshots(dropletId: string): Promise<ISnapshot[]> {
+  snapshots(dropletId: string): DOCursor {
     var uri = `${this.path}/${dropletId}/snapshots`
-    return this.client.get(uri).then((r) => {
-      return r.data.snapshots
-    })
+    var cursor = new DOCursor(this.client, uri, undefined, 40)
+
+    return cursor
   }
   backups(dropletId: string): Promise<IBackup[]> {
     var uri = `${this.path}/${dropletId}/backups`
@@ -142,11 +143,11 @@ export default class Droplets implements IDropletsService {
       return r.data.backups
     })
   }
-  actions(dropletId: string): Promise<IAction[]> {
+  actions(dropletId: string): DOCursor {
     var uri = `${this.path}/${dropletId}/actions`
-    return this.client.get(uri).then((r) => {
-      return r.data.actions
-    })
+    var cursor = new DOCursor(this.client, uri, undefined, 40)
+
+    return cursor
   }
 
   delete(dropletId: string): Promise<number> {

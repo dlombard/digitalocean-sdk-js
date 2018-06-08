@@ -1,5 +1,6 @@
 import { AxiosInstance } from "axios";
 import { IRegion } from "./regions";
+import DOCursor from "./utils/DOCursor";
 
 export interface IFloatingIp {
   ip: string,
@@ -8,7 +9,7 @@ export interface IFloatingIp {
 }
 
 interface IFloatingIpService {
-  get: () => Promise<IFloatingIp[]>
+  get: () => DOCursor
   createDropletFloatingIp: (dropletId: string) => Promise<IFloatingIp>
   createRegionFloatingIp: (region: string) => Promise<IFloatingIp>
   getByIp: (ipAddr: string) => Promise<IFloatingIp>
@@ -24,10 +25,10 @@ export default class FloatingIps implements IFloatingIpService {
     this.client = oauthClient;
   }
 
-  get(): Promise<IFloatingIp[]> {
-    return this.client.get(this.path).then((r) => {
-      return r.data.floating_ips
-    })
+  get(): DOCursor {
+    var cursor = new DOCursor(this.client, this.path, undefined, 40)
+
+    return cursor
   }
   createDropletFloatingIp(dropletId: string): Promise<IFloatingIp> {
     return this.client.post(this.path, { droplet_id: dropletId }).then((r) => {

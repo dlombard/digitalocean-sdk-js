@@ -1,4 +1,5 @@
 import { AxiosInstance } from "axios";
+import DOCursor from "./utils/DOCursor";
 
 export interface IDomainRecord {
   id?: string,
@@ -14,7 +15,7 @@ export interface IDomainRecord {
 }
 
 interface IDomainRecordsService {
-  get: (name: string) => Promise<void | IDomainRecord[]>,
+  get: (name: string) => DOCursor,
   getById: (name: string, recordId: string) => Promise<void | IDomainRecord>,
   delete: (name: string, recordId: string) => Promise<void | number>,
   create: (name: string, request: IDomainRecord) => Promise<void | IDomainRecord>,
@@ -28,11 +29,11 @@ export default class DomainRecords implements IDomainRecordsService {
     this.path = '/domains'
     this.client = oauthClient;
   }
-  get(name: string): Promise<void | IDomainRecord[]> {
+  get(name: string): DOCursor {
     var uri = `${this.path}/${name}/records`
-    return this.client.get(uri).then((r) => {
-      return r.data.domain_records
-    })
+    var cursor = new DOCursor(this.client, uri, undefined, 40)
+
+    return cursor
   }
   getById(name: string, recordId: string): Promise<void | IDomainRecord> {
     var uri = `${this.path}/${name}/records/${recordId}`

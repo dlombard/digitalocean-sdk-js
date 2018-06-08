@@ -1,5 +1,6 @@
 import { ISize } from "./sizes";
 import { AxiosInstance } from "axios";
+import DOCursor from "./utils/DOCursor";
 
 export interface IRegion {
   slug: string,
@@ -10,7 +11,7 @@ export interface IRegion {
 }
 
 interface IRegionService{
-  get:() => Promise<IRegion[]>
+  get:() => DOCursor
 }
 
 export default class Regions implements IRegionService{
@@ -21,9 +22,9 @@ export default class Regions implements IRegionService{
     this.client = oauthClient;
   }
 
-  get():Promise<IRegion[]>{
-    return this.client.get(this.path).then((r) => {
-      return r.data.regions
-    })
+  get():DOCursor{
+    var cursor = new DOCursor(this.client, this.path, undefined, 40)
+
+    return cursor
   }
 }

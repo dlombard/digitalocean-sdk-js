@@ -1,4 +1,5 @@
 import { AxiosInstance } from "axios";
+import DOCursor from "./utils/DOCursor";
 
 export interface ISize {
   slug: string,
@@ -13,7 +14,7 @@ export interface ISize {
 }
 
 interface ISizeService {
-  get: () => Promise<ISize[]>
+  get: () => DOCursor
 }
 
 export default class Sizes implements ISizeService {
@@ -24,9 +25,9 @@ export default class Sizes implements ISizeService {
     this.client = oauthClient;
   }
 
-  get(): Promise<ISize[]> {
-    return this.client.get(this.path).then((r) => {
-      return r.data.sizes
-    })
+  get(): DOCursor{
+    var cursor = new DOCursor(this.client, this.path, undefined, 40)
+
+    return cursor
   }
 }

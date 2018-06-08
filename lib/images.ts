@@ -1,5 +1,6 @@
 import { IAction } from "./actions";
 import { AxiosInstance } from "axios";
+import DOCursor from "./utils/DOCursor";
 
 export interface IImage {
   id: number,
@@ -15,16 +16,16 @@ export interface IImage {
 }
 
 interface IImagesService {
-  get: () => Promise<IImage[]>
-  distributions: () => Promise<IImage[]>
-  applications: () => Promise<IImage[]>
-  private: () => Promise<IImage[]>
-  actions: (imageId: string) => Promise<IAction[]>
+  get: () => DOCursor
+  distributions: () => DOCursor
+  applications: () =>DOCursor
+  private: () => DOCursor
+  actions: (imageId: string) => DOCursor
   getById: (imageId: string) => Promise<IImage>
-  getByslug: (slug: string) => Promise<IImage>
+  getByslug: (slug: string) => Promise<IImage> 
   update: (imageId: string, name: string) => Promise<IImage>
   delete: (imageId: string) => Promise<number>
-  executeByType: (type: string) => Promise<IImage[]>
+  executeByType: (type: string) => DOCursor
 }
 
 export default class Images implements IImagesService {
@@ -36,26 +37,26 @@ export default class Images implements IImagesService {
     this.client = oauthClient;
   }
 
-  get(): Promise<IImage[]> {
-    return this.client.get(this.path).then((r) => {
-      return r.data.images
-    })
+  get(): DOCursor {
+    var cursor = new DOCursor(this.client, this.path, undefined, 40)
+
+    return cursor
   }
-  distributions(): Promise<IImage[]> {
+  distributions(): DOCursor {
     return this.executeByType('distribution')
   }
-  applications(): Promise<IImage[]> {
+  applications(): DOCursor {
     return this.executeByType('application')
   }
-  private(): Promise<IImage[]> {
+  private(): DOCursor {
     return this.executeByType('private')
   }
-  actions(imageId: string): Promise<IAction[]> {
+  actions(imageId: string): DOCursor {
     var uri = `${this.path}/${imageId}/actions`
 
-    return this.client.get(uri).then((r) => {
-      return r.data.actions
-    })
+    var cursor = new DOCursor(this.client, uri, undefined, 40)
+
+    return cursor
   }
   getById(imageId: string): Promise<IImage> {
     var uri = `${this.path}/${imageId}`
@@ -85,15 +86,15 @@ export default class Images implements IImagesService {
   }
 
 
-  executeByType(type: string): Promise<IImage[]> {
+  executeByType(type: string): DOCursor {
     var params = {}
     if (type === 'private') {
       params = { private: true };
     } else {
       params = { type }
     }
-    return this.client.get(this.path, { params }).then((r) => {
-      return r.data.images
-    })
+    var cursor = new DOCursor(this.client, this.path, params, 40)
+
+    return cursor
   }
 }

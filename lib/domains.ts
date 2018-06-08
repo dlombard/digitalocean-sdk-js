@@ -1,4 +1,5 @@
 import { AxiosInstance } from "axios";
+import DOCursor from "./utils/DOCursor";
 
 export interface IDomain {
   name: string,
@@ -7,7 +8,7 @@ export interface IDomain {
 }
 
 interface IDomainsService {
-  get: () => Promise<void | IDomain[]>,
+  get: () => DOCursor,
   create: (name: string, ip_address: string) => Promise<void | IDomain>,
   getByName: (name: string) => Promise<void | IDomain>,
   delete: (name: string) => Promise<void | number>,
@@ -20,10 +21,10 @@ export default class Domains implements IDomainsService {
     this.path = '/domains'
     this.client = oauthClient;
   }
-  get(): Promise<void | IDomain[]> {
-    return this.client.get(this.path).then((r) => {
-      return r.data.domains
-    })
+  get(): DOCursor {
+    var cursor = new DOCursor(this.client, this.path, undefined, 40)
+
+    return cursor
   }
   create(name: string, ip_address: string): Promise<void | IDomain> {
     return this.client.post(this.path, { name, ip_address }).then((r) => {

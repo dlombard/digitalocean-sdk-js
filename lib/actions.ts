@@ -1,4 +1,5 @@
 import { AxiosInstance } from "axios";
+import DOCursor from "./utils/DOCursor";
 
 
 export interface IAction {
@@ -16,7 +17,7 @@ export interface IAction {
 }
 
 interface IActionsService {
-  get: () => Promise<void | IAction[]>,
+  get: () => DOCursor,
   getById: (actionId: string) => Promise<void | IAction>
 }
 
@@ -28,21 +29,16 @@ export default class Actions implements IActionsService {
     this.client = oauthClient;
   }
 
-  get(): Promise<void | IAction[]> {
-    return this.client.get(this.path).then((r) => {
-      var actions: IAction[] = r.data.actions
-      return actions
-    }).catch((e) => {
-      console.error(e)
-    })
+  get(): DOCursor {
+    var cursor = new DOCursor(this.client, this.path, undefined, 40)
+
+    return cursor
   }
 
   getById(actionId: string): Promise<void | IAction> {
     var uri = `/${this.path}/${actionId}`
     return this.client.get(uri).then((r) => {
       return r.data.action
-    }).catch((e) => {
-      console.error(e)
     })
   }
 }

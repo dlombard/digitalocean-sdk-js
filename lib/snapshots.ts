@@ -1,4 +1,5 @@
 import { AxiosInstance } from "axios";
+import DOCursor from "./utils/DOCursor";
 
 export interface ISnapshot {
   id: string,
@@ -12,10 +13,10 @@ export interface ISnapshot {
 }
 
 interface ISnapshotsService {
-  get: () => Promise<ISnapshot[]>
+  get: () => DOCursor
   getById: (snapshotId: string) => Promise<ISnapshot>
-  droplet: () => Promise<ISnapshot[]>
-  volume: () => Promise<ISnapshot[]>
+  droplet: () => DOCursor
+  volume: () => DOCursor
   delete: (snapshotId: string) => Promise<number>
 }
 
@@ -29,10 +30,10 @@ export default class Snapshots implements ISnapshotsService {
     this.client = oauthClient
   }
 
-  get(): Promise<ISnapshot[]> {
-    return this.client.get(this.path).then((r) => {
-      return r.data.snapshots
-    })
+  get(): DOCursor{
+    var cursor = new DOCursor(this.client, this.path, undefined, 40)
+
+    return cursor
   }
   getById(snapshotId: string): Promise<ISnapshot> {
     var uri = `${this.path}/${snapshotId}`
@@ -40,15 +41,17 @@ export default class Snapshots implements ISnapshotsService {
       return r.data.snapshot
     })
   }
-  droplet(): Promise<ISnapshot[]> {
-    return this.client.get(this.path, { params: { resource_type: 'droplet' } }).then((r) => {
-      return r.data.snapshots
-    })
+  droplet(): DOCursor {
+    var params = { resource_type: 'droplet' } 
+    var cursor = new DOCursor(this.client, this.path, params, 40)
+
+    return cursor
   }
-  volume(): Promise<ISnapshot[]> {
-    return this.client.get(this.path, { params: { resource_type: 'volume' } }).then((r) => {
-      return r.data.snapshots
-    })
+  volume(): DOCursor {
+    var params = { resource_type: 'volume' } 
+    var cursor = new DOCursor(this.client, this.path, params, 40)
+
+    return cursor
   }
   delete(snapshotId: string): Promise<number> {
     var uri = `${this.path}/${snapshotId}`

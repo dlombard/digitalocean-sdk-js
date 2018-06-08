@@ -1,5 +1,6 @@
 import { IAction } from "./actions";
 import { AxiosInstance } from "axios";
+import DOCursor from "./utils/DOCursor";
 
 export interface IVolumesService {
   attach: (volumeId: string, dropletId: string, region: string) => Promise<void | IAction>,
@@ -8,7 +9,7 @@ export interface IVolumesService {
   detachByName: (dropletId: string, volumeName: string, region: string) => Promise<void | IAction>,
   resize: (volumeId: string, size_gigabytes: number, region: string) => Promise<void | IAction>,
   get: (volumeId: string, actionId: string) => Promise<void | IAction>,
-  getActions: (volumeId: string) => Promise<void | IAction[]>,
+  getActions: (volumeId: string) => DOCursor,
 
 }
 
@@ -30,8 +31,6 @@ export default class VolumesActions implements IVolumesService {
     }
     return this.client.post(uri, request).then((r) => {
       return r.data.action
-    }).catch((e) => {
-      console.error(e)
     })
 
   }
@@ -45,8 +44,6 @@ export default class VolumesActions implements IVolumesService {
     }
     return this.client.post(uri, request).then((r) => {
       return r.data.action
-    }).catch((e) => {
-      console.error(e)
     })
 
   }
@@ -59,8 +56,6 @@ export default class VolumesActions implements IVolumesService {
     }
     return this.client.post(uri, request).then((r) => {
       return r.data.action
-    }).catch((e) => {
-      console.error(e)
     })
   }
   detachByName(dropletId: string, volumeName: string, region: string): Promise<void | IAction> {
@@ -73,8 +68,6 @@ export default class VolumesActions implements IVolumesService {
     }
     return this.client.post(uri, request).then((r) => {
       return r.data.action
-    }).catch((e) => {
-      console.error(e)
     })
 
   }
@@ -87,8 +80,6 @@ export default class VolumesActions implements IVolumesService {
     }
     return this.client.post(uri, request).then((r) => {
       return r.data.action
-    }).catch((e) => {
-      console.error(e)
     })
   }
   get(volumeId: string, actionId: string): Promise<void | IAction> {
@@ -99,14 +90,11 @@ export default class VolumesActions implements IVolumesService {
       console.error(e)
     })
   }
-  getActions(volumeId: string): Promise<void | IAction[]> {
+  getActions(volumeId: string): DOCursor {
     var uri = `${this.path}/${volumeId}/actions`
-    return this.client.get(uri).then((r) => {
-      var actions: IAction[] = r.data.actions
-      return actions
-    }).catch((e) => {
-      console.error(e)
-    })
+    var cursor = new DOCursor(this.client, uri, undefined, 40)
+
+    return cursor
   }
 
 }

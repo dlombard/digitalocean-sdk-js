@@ -1,4 +1,5 @@
 import { AxiosInstance } from "axios";
+import DOCursor from "./utils/DOCursor";
 
 export interface ICertificate {
   id: string,
@@ -24,7 +25,7 @@ export interface ICertificateRequest {
 
 interface ICertificatesService {
   create: (request: ICertificateRequest) => Promise<void | ICertificate>,
-  get: () => Promise<void | ICertificate[]>,
+  get: () => DOCursor,
   getById: (certifcateId: string) => Promise<void | ICertificate>,
   delete: (certifcateId: string) => Promise<void | number>
 }
@@ -42,10 +43,10 @@ export default class Certificates {
       return r.data.certificate
     })
   }
-  get(): Promise<void | ICertificate[]> {
-    return this.client.get(this.path).then((r) => {
-      return r.data.certificates
-    })
+  get(): DOCursor {
+    var cursor = new DOCursor(this.client, this.path, undefined, 40)
+
+    return cursor
   }
   getById(certifcateId: string): Promise<void | ICertificate> {
     var uri = `${this.path}/${certifcateId}`

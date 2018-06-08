@@ -1,4 +1,5 @@
 import { AxiosInstance } from "axios";
+import DOCursor from "./utils/DOCursor";
 
 export interface IInboundRules {
   protocol: string,
@@ -42,7 +43,7 @@ export interface IFirewallRequest {
 interface IFirewallService {
   create: (request: IFirewallRequest) => Promise<IFirewall>
   getById: (firewallId: String) => Promise<IFirewall>
-  get: () => Promise<IFirewall[]>
+  get: () => DOCursor
   update: (firewallId: string, request: IFirewallRequest) => Promise<IFirewall>
   delete: (firewallId: String) => Promise<number>
   addDroplets: (firewallId: String, dropletIds: string[]) => Promise<number>
@@ -72,10 +73,10 @@ export default class Firewalls implements IFirewallService {
       return r.data.firewall
     })
   }
-  get(): Promise<IFirewall[]> {
-    return this.client.get(this.path).then((r) => {
-      return r.data.firewalls
-    })
+  get(): DOCursor {
+    var cursor = new DOCursor(this.client, this.path, undefined, 40)
+
+    return cursor
   }
   update(firewallId: string, request: IFirewallRequest): Promise<IFirewall> {
     var uri = `${this.path}/${firewallId}`

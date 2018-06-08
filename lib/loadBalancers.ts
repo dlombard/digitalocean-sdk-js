@@ -1,5 +1,6 @@
 import { IRegion } from './regions'
 import { AxiosInstance } from 'axios';
+import DOCursor from './utils/DOCursor';
 
 export interface IForwardingRule {
   entry_protocol: string,
@@ -56,7 +57,7 @@ export interface ILoadBalancerRequest {
 interface ILoadBalancerService {
   create: (request: ILoadBalancerRequest) => Promise<ILoadBalancer>
   getById: (lbId: string) => Promise<ILoadBalancer>
-  get: () => Promise<ILoadBalancer[]>
+  get: () => DOCursor
   update: (lbId: string, request: ILoadBalancerRequest) => Promise<ILoadBalancer>
   delete: (lbId: string) => Promise<number>
   addDroplets: (lbId: string, dropletIds: string[]) => Promise<number>
@@ -88,10 +89,10 @@ export default class LoadBalancers implements ILoadBalancerService {
       return r.data.load_balancer
     })
   }
-  get(): Promise<ILoadBalancer[]> {
-    return this.client.get(this.path).then((r) => {
-      return r.data.load_balancers
-    })
+  get(): DOCursor {
+    var cursor = new DOCursor(this.client, this.path, undefined, 40)
+
+    return cursor
   }
   update(lbId: string, request: ILoadBalancerRequest): Promise<ILoadBalancer> {
 

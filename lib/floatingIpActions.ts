@@ -1,10 +1,11 @@
 import { IAction } from "./actions";
 import { AxiosInstance } from "axios";
+import DOCursor from "./utils/DOCursor";
 
 interface IFloatingIpActionsService {
   assign: (ipAddr: string) => Promise<IAction>
   unassign: (ipAddr: string) => Promise<IAction>
-  get: (ipAddr: string) => Promise<IAction[]>
+  get: (ipAddr: string) => DOCursor
   getByActionId: (ipAddr: string, actionId: string) => Promise<IAction>
 }
 
@@ -28,11 +29,11 @@ export default class FloatingIpActions implements IFloatingIpActionsService {
       return r.data.action
     })
   }
-  get(ipAddr: string): Promise<IAction[]> {
+  get(ipAddr: string): DOCursor {
     var uri = `${this.path}/${ipAddr}/actions`
-    return this.client.get(uri).then((r) => {
-      return r.data.actions
-    })
+    var cursor = new DOCursor(this.client, uri, undefined, 40)
+
+    return cursor
   }
   getByActionId(ipAddr: string, actionId: string): Promise<IAction> {
     var uri = `${this.path}/${ipAddr}/actions/${actionId}`

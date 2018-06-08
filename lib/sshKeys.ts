@@ -1,4 +1,5 @@
 import { AxiosInstance } from "axios"
+import DOCursor from "./utils/DOCursor";
 
 export interface ISSHKey {
   id: number,
@@ -8,7 +9,7 @@ export interface ISSHKey {
 }
 
 interface ISSHKeysService {
-  get: () => Promise<ISSHKey[]>,
+  get: () => DOCursor,
   create: (name: string, public_key: string) => Promise<ISSHKey>,
   getById: (sshKeyId: string) => Promise<ISSHKey>,
   getByFingerprint: (fingerprint: string) => Promise<ISSHKey>,
@@ -26,10 +27,10 @@ export default class SSHKeys implements ISSHKeysService {
     this.client = oauthClient
   }
 
-  get(): Promise<ISSHKey[]> {
-    return this.client.get(this.path).then((r) => {
-      return r.data.ssh_keys
-    })
+  get(): DOCursor {
+    var cursor = new DOCursor(this.client, this.path, undefined, 40)
+
+    return cursor
   }
   create(name: string, public_key: string): Promise<ISSHKey> {
     return this.client.post(this.path, { name, public_key }).then((r) => {
