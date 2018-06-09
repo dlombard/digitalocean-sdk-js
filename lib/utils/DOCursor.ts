@@ -86,9 +86,7 @@ export default class DOCursor implements ICursor {
       delete res.data.links
       delete res.data.meta
 
-      this.node.payload = { ...res.data }
-
-      return this.node.payload
+      return res.data[Object.keys(res.data)[0]]
 
     })
   }
