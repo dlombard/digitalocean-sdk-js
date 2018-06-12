@@ -16,6 +16,7 @@ interface ISSHKeysService {
   update: (sshKeyId: string, name: string) => Promise<ISSHKey>,
   destroyById: (sshKeyId: string) => Promise<number>,
   destroyByFingerprint: (fingerprint: string) => Promise<number>,
+  destroyByName: (name: string) => Promise<number>,
 }
 
 export default class SSHKeys implements ISSHKeysService {
@@ -68,6 +69,27 @@ export default class SSHKeys implements ISSHKeysService {
     var uri = `${this.path}/${fingerprint}`
     return this.client.delete(uri).then((r) => {
       return r.status
+    })
+  }
+
+  destroyByName(name: string): Promise<number> {
+    return this.get().next().then((keys) => {
+      let key;
+      if (keys) {
+        keys.forEach((_key) => {
+          if (_key.name === name) {
+            key = _key
+          }
+        })
+      }
+      return key
+    }).then((key) => {
+      if (key) {
+        return this.destroyById(key.id)
+      }
+      return
+    }).then((status: number) => {
+      return status
     })
   }
 }

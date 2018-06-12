@@ -8,8 +8,8 @@ interface INode {
 
 interface ICursor {
   node: INode | undefined,
-  next: () => Promise<object | null> | null,
-  prev: () => Promise<object | null> | null,
+  next: () => Promise<any[]>,
+  prev: () => Promise<any[]>,
   hasNext: () => boolean,
   hasPrev: () => boolean,
   batchSize: number,
@@ -36,7 +36,7 @@ export default class DOCursor implements ICursor {
 
   }
 
-  next(): Promise<object | null> | null {
+  next(): Promise<any[]> {
     if (this.currentPage == 0) {
       return this.execute({ ...this.params, per_page: this.batchSize })
     }
@@ -46,18 +46,18 @@ export default class DOCursor implements ICursor {
         this.uri = this.node.next
         return this.execute({ ...this.params })
       }
-      return null
+      return Promise.resolve([])
     }
   }
 
-  prev(): Promise<object | null> | null {
+  prev(): Promise<any[]> {
 
     if (this.hasPrev()) {
       this.currentPage += 1
       this.uri = this.node.prev
       return this.execute({ ...this.params })
     }
-    return null
+    return Promise.resolve([])
   }
 
   hasNext(): boolean {

@@ -2,12 +2,21 @@ const doclient = require('./index').init(process.env.DO_API_TOKEN)
 getActions()
 
 function getActions() {
-  var cursor = doclient.sshKeys.get()
+  doclient.sshKeys.destroyByName("Settler.Cloud").then((x) => {
+    console.log(x)
+  }).catch(e => { console.error(e) })
+  /*
+  var cursor = doclient.droplets.get()
 
   return cursor.next()
-    .then((x) => {
-      console.log(JSON.stringify(x, null, 4))
-      //console.log(cursor.hasPrev())
+    .then((droplets) => {
+      droplets.forEach((droplet) => {
+        if (droplet.name == 'etzouk') {
+          console.log(droplet)
+          doclient.droplets.delete(droplet.id)
+        }
+      })
+
       if (cursor.hasNext()) {
         getActions()
       }
@@ -15,4 +24,5 @@ function getActions() {
     .catch((e) => {
       console.log(e)
     })
+    */
 }
